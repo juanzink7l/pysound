@@ -39,10 +39,11 @@ def login():
     token = create_access_token(identify=str(user.id))
 
     return jsonify({
-        "message": "Login realizado!!💯💯",
+        "message": "Login realizado!",
         "token": token,
         "user": user.to_dict()
     }), 200
+
 
 
 
