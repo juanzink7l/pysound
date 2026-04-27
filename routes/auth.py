@@ -3,19 +3,21 @@ from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 
-auth_bp = Blueprint('auth',__name__)
+auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/register', methods=["POST"])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
 
-    # Validacão básica
+    # Validação básica
     if not data or not all(k in data for k in ['username', 'email', 'password']):
         return jsonify({"error": "Campos obrigatórios: username, email, password"}), 400
-    #verificar se o usuário ja existe
+
+    # Verifica se usuário já existe
     if User.query.filter_by(email=data['email']).first():
-        return jsonify ({"error": "E-mail já cadastrado"}), 409
-    #Criar o usuário com senha criptografada
+        return jsonify({"error": "Email já cadastrado"}), 409
+
+    # Cria o usuário com senha criptografada
     user = User(
         username=data['username'],
         email=data['email'],
@@ -24,27 +26,26 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({'message': "Usuário criado!", "user": user.to_dict()}), 201
+    return jsonify({"message": "Usuário criado!", "user": user.to_dict()}), 201
 
-@auth_bp.route('/login', methods=["POST"])
+
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
 
-    user = User.query_filter_by(email=data.get('email')).first() #serve pra verificar primeiro ".first"
+    user = User.query.filter_by(email=data.get('email')).first()
 
     if not user or not check_password_hash(user.password, data.get('password', '')):
-        return jsonify ({"error": "Credenciais inválidas"}), 401
-    
-    #Gera o token JWT
-    token = create_access_token(identify=str(user.id))
+        return jsonify({"error": "Credenciais inválidas"}), 401
+
+    # Gera o token JWT
+    token = create_access_token(identity=str(user.id))
 
     return jsonify({
         "message": "Login realizado!",
         "token": token,
         "user": user.to_dict()
     }), 200
-
-
 
 
 
