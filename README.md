@@ -77,7 +77,7 @@ pysound/
 ### Passo a Passo
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/pysound.git
+git clone https://github.juanzink7l/pysound.git
 cd pysound
 ```
 
